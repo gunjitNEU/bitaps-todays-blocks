@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+// Inside src/App.tsx
+import React, { useState, useEffect } from 'react';
+import BitcoinBlocksTable from './BitcoinBlocksTable';
 import './App.css';
 
-function App() {
+interface Block {
+  height: number;
+  hash: string;
+  header: string;
+  adjustedTimestamp: string;
+}
+
+const App: React.FC = () => {
+  const [blockData, setBlockData] = useState<Block[]>([]);
+  const itemsPerPage = 10; // Set your preferred number of items per page
+  
+  useEffect(() => {
+    // Assuming you fetch the data from an API
+    // Replace this with your API call
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://api.bitaps.com/btc/v1/blockchain/blocks/date/20240219');
+        const data: { data: Block[] } = await response.json();
+        setBlockData(data.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1>Bitcoin Blocks</h1>
+      <BitcoinBlocksTable data={blockData} itemsPerPage={itemsPerPage} />
     </div>
   );
-}
+};
 
 export default App;
